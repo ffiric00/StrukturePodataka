@@ -1,160 +1,114 @@
-#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS //NEDOVRSENO!!
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include<stdlib.h>
+#include<string.h> 
 
-#define M (256)
+#define MAX 20
 
 struct person;
 typedef struct person* Position;
 typedef struct person {
-	char ime[M];
-	char prezime[M];
-	int godina;
+	char name[MAX];
+	char surname[MAX];
+	int birthYear;
 	Position next;
 }Person;
 
-Position noviStudent(char*, char*, int);
-void Ispis(Position);
-void unosPocetak(Position, Position);
-void unosKraj(Position, Position);
-Position pronalazak(Position, char*);
-Position pronalazakPret(Position, char*);
-void brisi(Position, char*);
+Person* enterData(void);
+void entryAtBeginning(Position, Position);
+void printList(Person *); 
+void entryAtEnd(Position, Position); 
+Position search(char[MAX], Person *); 
+void erase(char[], Person *);
 
-int main() {
-	Position head = NULL, p, n;
-	char Ime[M], Prezime[M], prezimen[M];
-	int god;
-	char s;
 
-	while (1) {
 
-		printf("MENU:\nnovi element na pocetak liste-P\nnovi element na kraj liste-k\npronalazak elementa-n\nbrisati elemnt-b\nkraj programa-l\n");
-		scanf(" %c", &s);
-		switch (s) {
-		case 'p':
-			printf("unesite ime:\t");
-			scanf(" %s", Ime);
 
-			printf("unesite prezime:\t");
-			scanf(" %s", Prezime);
-
-			printf("unesite godinu rodjenja:\t");
-			scanf(" %d", &god);
-
-			printf("\n");
-
-			p = noviStudent(Ime, Prezime, god);
-			unosPocetak(&head, p);
-			Ispis(&head);
+int main(void) {
+	Person *head, *prototype; 
+	head = (Person*)malloc(sizeof(Person));
+	head->next = 0;
+	int choice, constant = 1; 
+	char subject_search[MAX];
+	while (constant) {
+		printf("\nMENU\n(1)Unesi element na pocetak liste\n(2)Ispisi listu\n(3)Dodaj element na kraju liste\n(4)Pronadi element po prezimenu\n(5)Izbrisi odredeni element\n(6)Kraj\n");
+		scanf("%d", &choice);
+		switch (choice) {
+		case 1:
+			prototype = enterData();
+			entryAtBeginning(prototype, head);
 			break;
-		case 'k':
-			printf("unesite ime:\t");
-			scanf(" %s", Ime);
-
-			printf("unesite prezime:\t");
-			scanf(" %s", Prezime);
-
-			printf("unesite godinu rodjenja:\t");
-			scanf(" %d", &god);
-
-			printf("\n");
-
-			p = noviStudent(Ime, Prezime, god);
-			unosKraj(&head, p);
-			Ispis(&head);
+		case 2:
+			printList(head->next);
+			break; 
+		case 3: 
+			prototype = enterData(); 
+			entryAtEnd(prototype, head); 
 			break;
-		case 'n':
-			printf("unesite prezime studenta koje zelite naci: ");
-			scanf(" %s", prezimen);
-			n = pronalazak(&head, prezimen);
-			printf("\n%s %s %d\r\n", n->ime, n->prezime, n->godina);
+		case 4: 
+			printf("\nUnesi prezime osobe koje zelis naci");
+			scanf("%s", &subject_search);
+			Position subjectSearch = search(subject_search, head); 
+			printf("\nTrazena osoba je:%s\t%s\t%d", subjectSearch->name, subjectSearch->surname, subjectSearch->birthYear); 
 			break;
-		case 'b':
-
-			printf("unesite prezime studenta koje zelite izbrisati: ");
-			scanf(" %s", prezimen);
-			brisi(&head, prezimen);
-			Ispis(&head);
+		case 5: 
+			printf("\nUnesi prezime osobe koju zelis izbrisati");
+			scanf("%s", &subject_search);  
+			erase(subject_search, head); 
 			break;
-		case 'l':
-			return 0;
-			break;
+	
+		
 		}
 	}
-
+	system("pause");
 	return 0;
 }
 
-Position noviStudent(char* Ime, char* Prezime, int god)
-{
-	Position p;
-
-	p = (Position)malloc(sizeof(struct person));
-
-	p->godina = god;
-	strcpy(p->ime, Ime);
-	strcpy(p->prezime, Prezime);
-	p->next = NULL;
-
-	return p;
+Person* enterData(void) {
+	Person* P;
+	P = (Person*)malloc(sizeof(Person));
+	printf("Unesi ime\n");
+	scanf("%s", P->name);
+	printf("Unesi prezime\n");
+	scanf("%s", P->surname);
+	printf("Unesi godinu rodenja\n");
+	scanf("%d", &P->birthYear);
+	P->next = NULL;
+	return P;
 }
 
-void Ispis(Position head)
-{
-	Position p = NULL;
+void entryAtBeginning(Position what, Position where) {
+	what->next = where->next;
+	where->next = what;
+}
 
-	printf("KONTENT LISTE: \n\n");
-	for (p = head->next; p != NULL; p = p->next) {
-		printf("\t %s %s %d \n", p->ime, p->prezime, p->godina);
+void printList(Person *head) {
+	while (&head != NULL) {
+		printf("\n%s\t%s\t%d", head->name, head->surname, head->birthYear);
+		head = head->next;
 	}
-	printf("\r\n");
-}
+} 
 
-void unosPocetak(Position head, Position p)
-{
-	p->next = head->next;
-	head->next = p;
-}
+void entryAtEnd(Position what, Position where) { 
+	while (what->next != NULL)
+		what = what->next; 
+	entryAtBeginning(what, where);
 
-void unosKraj(Position q, Position p)
-{
-	while (q->next != NULL) {
-		q = q->next;
-	}
-	unosPocetak(q, p);
-}
+} 
 
-Position pronalazak(Position q, char* prez) {
-	while (q->next != NULL && strcmp(q->prezime, prez))
-		q = q->next;
-	return q;
-}
+Position search(char what[MAX], Position where) {
+	while (strcmp(where->next->surname, what) != 0 && where->next != NULL)
+		where = where->next; 
+	return where->next;
+} 
 
-Position pronalazakPret(Position p, char* prezimen) {
-	Position pret = p;
-	p = p->next;
-
-	while (p->next != NULL && strcmp(p->prezime, prezimen)) {
-		pret = p;
-		p = p->next;
-	}
-	if (p->next == NULL) {
-		printf("ne postoji!\n");
-		return NULL;
-	}
-	return pret;
-}
-
-void brisi(Position p, char* prezimen) {
-	Position prev;
-	prev = pronalazakPret(p, prezimen);
-
-	if (prev != NULL) {
-		p = prev->next;
-		prev->next = p->next;
-		free(p);
-	}
+void erase(char what[], Position where) {
+	Position previous; 
+	previous = search(what, where); 
+	if (previous != NULL) {
+		where = previous->next; 
+		previous->next = where->next; 
+	} 
+	free(where);
 }
