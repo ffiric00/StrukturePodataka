@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS //NEDOVRSENO!!
+#define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
 #include<stdlib.h>
@@ -17,19 +17,19 @@ typedef struct person {
 
 Person* enterData(void);
 void entryAtBeginning(Position, Position);
-void printList(Person *); 
-void entryAtEnd(Position, Position); 
-Position search(char[MAX], Person *); 
+void printList(Person *);
+void entryAtEnd(Position, Position);
+Position search(char[MAX], Person *);
 void erase(char[], Person *);
 
 
 
 
 int main(void) {
-	Person *head, *prototype; 
+	Person *head, *prototype;
 	head = (Person*)malloc(sizeof(Person));
 	head->next = 0;
-	int choice, constant = 1; 
+	int choice, constant = 1;
 	char subject_search[MAX];
 	while (constant) {
 		printf("\nMENU\n(1)Unesi element na pocetak liste\n(2)Ispisi listu\n(3)Dodaj element na kraju liste\n(4)Pronadi element po prezimenu\n(5)Izbrisi odredeni element\n(6)Kraj\n");
@@ -40,25 +40,30 @@ int main(void) {
 			entryAtBeginning(prototype, head);
 			break;
 		case 2:
-			printList(head->next);
-			break; 
-		case 3: 
-			prototype = enterData(); 
-			entryAtEnd(prototype, head); 
+			printList(head->next); 
 			break;
-		case 4: 
+		case 3:
+			prototype = enterData();
+			entryAtEnd(prototype, head);
+			break;
+		case 4: {
 			printf("\nUnesi prezime osobe koje zelis naci");
-			scanf("%s", &subject_search);
-			Position subjectSearch = search(subject_search, head); 
-			printf("\nTrazena osoba je:%s\t%s\t%d", subjectSearch->name, subjectSearch->surname, subjectSearch->birthYear); 
+			scanf("%s", subject_search);
+			Position subjectSearch = search(subject_search, head);
+			printf("\nTrazena osoba je:%s\t%s\t%d\n", subjectSearch->name, subjectSearch->surname, subjectSearch->birthYear);
 			break;
-		case 5: 
+		}
+		case 5: {
 			printf("\nUnesi prezime osobe koju zelis izbrisati");
-			scanf("%s", &subject_search);  
-			erase(subject_search, head); 
+			scanf("%s", subject_search);
+			erase(subject_search, head);
 			break;
-	
-		
+		} 
+		case 6: 
+			constant = 0; 
+			break; 
+		default: 
+			printf("Greska");
 		}
 	}
 	system("pause");
@@ -83,32 +88,33 @@ void entryAtBeginning(Position what, Position where) {
 	where->next = what;
 }
 
-void printList(Person *head) {
+void printList(Person *head) { 
+	printf("IME\tPREZIME\tGODINA RODENJA");
 	while (&head != NULL) {
 		printf("\n%s\t%s\t%d", head->name, head->surname, head->birthYear);
 		head = head->next;
 	}
-} 
+}
 
-void entryAtEnd(Position what, Position where) { 
+void entryAtEnd(Position what, Position where) {
 	while (what->next != NULL)
-		what = what->next; 
+		what = what->next;
 	entryAtBeginning(what, where);
 
-} 
+}
 
 Position search(char what[MAX], Position where) {
 	while (strcmp(where->next->surname, what) != 0 && where->next != NULL)
-		where = where->next; 
+		where = where->next;
 	return where->next;
-} 
+}
 
 void erase(char what[], Position where) {
-	Position previous; 
-	previous = search(what, where); 
+	Position previous;
+	previous = search(what, where);
 	if (previous != NULL) {
-		where = previous->next; 
-		previous->next = where->next; 
-	} 
+		where = previous->next;
+		previous->next = where->next;
+	}
 	free(where);
 }
