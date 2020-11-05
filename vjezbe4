@@ -1,0 +1,57 @@
+#include<stdio.h> 
+
+struct polynom; 
+typedef struct polynom* Position; 
+typedef struct polynom {
+	int coefficient;
+	int exponent; 
+	Position next;
+}Polynom; 
+
+Position sum(Position, Position, Position);  
+Position product(Position, Position, Position); 
+Position insertPolynom(FILE *);
+
+int main(void) { 
+
+} 
+
+Position sum(Position p, Position q, Position s) {
+	Position temp; 
+	while (p != NULL && q != NULL) {
+		if (p->exponent == q->exponent) {
+			insertPolynom(s, p->coefficient + q->coefficient, p->exponent);
+			p = p->next;
+			q = q->next;
+		}
+		else if (p->exponent > q->exponent) {
+			insertPolynom(s, p->coefficient, p->exponent);
+			p = p->next;
+		}
+		else {
+			insertPolynom(s, q->coefficient, q->exponent);
+			q = q->next;
+		}
+	} 
+	if (p != NULL)
+		temp = p;
+	else
+		temp = q; 
+	while (temp != NULL) {
+		insertPolynom(s, temp->coefficient, temp->exponent); 
+		temp = temp->next;
+	} 	 
+	return s;
+} 
+
+Position product(Position p, Position q, Position s) { 
+	if (p == NULL || q == NULL) {
+		s = NULL;
+	} 
+	else if{
+
+	}
+		 
+
+
+}
