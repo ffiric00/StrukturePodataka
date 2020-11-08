@@ -1,3 +1,4 @@
+
 #define _CRT_SECURE_NO_WARNINGS
 
 #include <stdio.h>
@@ -19,7 +20,7 @@ Person* enterData(void);
 void entryAtBeginning(Position, Position);
 void printList(Person *);
 void entryAtEnd(Position, Position);
-Position search(char[MAX], Person *);
+Person* search(char[MAX], Person *);
 void erase(char[], Person *);
 
 
@@ -40,7 +41,7 @@ int main(void) {
 			entryAtBeginning(prototype, head);
 			break;
 		case 2:
-			printList(head->next); 
+			printList(head->next);
 			break;
 		case 3:
 			prototype = enterData();
@@ -49,8 +50,8 @@ int main(void) {
 		case 4: {
 			printf("\nUnesi prezime osobe koje zelis naci");
 			scanf("%s", subject_search);
-			Position subjectSearch = search(subject_search, head);
-			printf("\nTrazena osoba je:%s\t%s\t%d\n", subjectSearch->name, subjectSearch->surname, subjectSearch->birthYear);
+			Person* subjectSearch = search(subject_search, head);
+			printf("\nTrazena osoba je:%s\t%s\t%d\n", subjectSearch->next->name, subjectSearch->next->surname, subjectSearch->next->birthYear);
 			break;
 		}
 		case 5: {
@@ -58,15 +59,16 @@ int main(void) {
 			scanf("%s", subject_search);
 			erase(subject_search, head);
 			break;
-		} 
-		case 6: 
-			constant = 0; 
-			break; 
-		default: 
+		}
+		case 6:
+			constant = 0;
+			break;
+		default:
 			printf("Greska");
 		}
 	}
-	system("pause");
+	free(head);
+	system("pause"); 
 	return 0;
 }
 
@@ -83,38 +85,38 @@ Person* enterData(void) {
 	return P;
 }
 
-void entryAtBeginning(Position what, Position where) {
-	what->next = where->next;
-	where->next = what;
+void entryAtBeginning(Person* person, Person* head) {
+	person->next = head->next;
+	head->next = person;
 }
 
-void printList(Person *head) { 
+void printList(Person *head) {
 	printf("IME\tPREZIME\tGODINA RODENJA");
-	while (&head != NULL) {
+	while (head != NULL) {
 		printf("\n%s\t%s\t%d", head->name, head->surname, head->birthYear);
 		head = head->next;
 	}
 }
 
-void entryAtEnd(Position what, Position where) {
-	while (what->next != NULL)
-		what = what->next;
-	entryAtBeginning(what, where);
+void entryAtEnd(Person* person, Position head) {
+	while (head->next != NULL)
+		head = head->next;
+	entryAtBeginning(person, head);
 
 }
 
-Position search(char what[MAX], Position where) {
-	while (strcmp(where->next->surname, what) != 0 && where->next != NULL)
-		where = where->next;
-	return where->next;
+Person* search(char surname[MAX], Position head) {
+	while (head->next != NULL && strcmp(head->next->surname, surname) != 0)
+		head = head->next;
+	return head;
 }
 
-void erase(char what[], Position where) {
+void erase(char surname[], Position head) {
 	Position previous;
-	previous = search(what, where);
+	previous = search(surname, head);
 	if (previous != NULL) {
-		where = previous->next;
-		previous->next = where->next;
+		head = previous->next;
+		previous->next = head->next;
 	}
-	free(where);
+	free(head);
 }
