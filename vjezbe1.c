@@ -10,7 +10,7 @@
 typedef struct _student {
 	char name[MAX];
 	char surname[MAX];
-	int score;
+	float score;
 
 }Student;
 
@@ -25,7 +25,7 @@ int main(void) {
 	st = (Student*)malloc(studentNumber * sizeof(Student));
 	readData(st, fp, studentNumber);
 	printData(st, studentNumber);
-	system("pause"); 
+	system("pause");
 	return 0;
 }
 
@@ -48,20 +48,21 @@ int readData(Student* st, FILE *fp, int studentNumber) {
 	fp = fopen("zadatak1.txt", "r");
 	int i;
 	for (i = 0; i < studentNumber; i++)
-		fscanf(fp, "%s %s %d", st[i].name, st[i].surname, &st[i].score);
+		fscanf(fp, "%s %s %f", st[i].name, st[i].surname, &st[i].score);
 	fclose(fp);
 	return 0;
 }
 
-int printData(Student* st, int studentNumber) { 
-	printf("IME\tPREZIME\tBODOVI\tAPSOLUTNI BROJ BODOVA\n");
-	int i, maxScore = 0, relativeScore;
+int printData(Student* st, int studentNumber) {
+	printf("IME\tPREZIME\tBODOVI\tRELATIVNI BROJ BODOVAn");
+	int i;
+	float maxScore = 0, relativeScore;
 	for (i = 0; i < studentNumber; i++)
 		if (st[i].score > maxScore)
 			maxScore = st[i].score;
 	for (i = 0; i < studentNumber; i++) {
 		relativeScore = st[i].score / maxScore * 100;
-		printf("%s\t%s\t%d\t%d\n", st[i].name, st[i].surname, st[i].score, relativeScore);
+		printf("%s\t%s\t%f\t%f\n", st[i].name, st[i].surname, st[i].score, relativeScore);
 	}
 	return 0;
 }
