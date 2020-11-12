@@ -1,0 +1,112 @@
+#define _CRT_SECURE_NO_WARNINGS
+
+#include<stdio.h>
+#include<stdlib.h>
+
+struct list; 
+typedef struct list* Position;
+typedef struct list {
+	int number; 
+	Position next;
+}List; 
+
+List* createElement(void);
+void pushFront(List*, List*); 
+List* dynamicAllocation(); 
+void insertList(List*); 
+int sortList(List*);
+List* disjunction(List*, List*); 
+List* conjuction(List*, List*);
+
+int main(void) {
+	List *head1, *head2, *con, *dis;
+	head1 = dynamicAllocation();
+	head2 = dynamicAllocation();
+	head1->next = NULL; 
+	head2->next = NULL;
+	insertList(head1); 
+	printf("Unesena je prva lista"); 
+	insertList(head2); 
+	printf("\nUnesena je druga lista"); 
+	sortList(head1); 
+	sortList(head2);
+	dis = disjunction(head1, head2); 
+	con = conjunction(head1, head2);
+}    
+
+List* createElement(void) {
+	List* l; 
+	int element;
+	l = (List*)malloc(sizeof(List)); 
+	printf("\nUnesi element\n");
+	scanf("%d", &element);
+	l->number =element; 
+	l->next = NULL; 
+	return l;	
+} 
+
+void pushFront(List* l, List* head) {
+	l->next = head->next;
+	head->next = l;
+} 
+
+List* dynamicAlloaction() {
+	List* l;
+	l = (List*)malloc(sizeof(List)); 
+	return l;
+} 
+
+void insertList(List* head) { 
+	int choice;
+	while (1) { 
+		printf("\nUnesi 1 ako zelis unijeti novi element\n");
+		scanf("%d", &choice);
+		if (choice)
+			pushFront(createElement(), head);
+		else
+			break;
+	}
+} 
+
+int sortList(List* head) { 
+	Position j, prev_j, temp, end;
+	end = NULL;
+	while (head->next != end) {
+		prev_j = head;
+		j = head->next;
+		while (j->next != end) {
+			if (j->number > (j->next->number)) {
+				temp = j->next;
+				prev_j->next = temp;
+				j->next = temp->next;
+				temp->next = j;
+				j = temp;
+			}
+			prev_j = j;
+			j = j->next;
+		}
+		end = j;
+	}
+	return 0;
+} 
+
+List* disjunction(List* head1, List* head2) { 
+	List* head3; 
+	dynamicAlloaction(head3); 
+	head3->next = NULL;
+	while (head1->next != NULL) { 
+		if (head1->number < head2->number) {
+			pushFront(head1, head3);
+			head1 = head1->next;
+		} 
+		else if (head1->number > head2->number) {
+			pushFront(head2, head3);
+			head2 = head2->next;
+		}
+	}
+
+} 
+
+List* conjunction(List* head1, List* head2) {
+
+}
