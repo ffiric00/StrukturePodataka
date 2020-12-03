@@ -1,0 +1,63 @@
+#include<stdio.h>
+#include<stdlib.h>  
+#include<time.h>
+
+typedef struct stack* Position; 
+typedef struct stack {
+	int element; 
+	Position next;  
+}Stack; 
+
+int push(Position); 
+int pop(Position); 
+int randomNumber(void); 
+Position findLastMember(Position); 
+int printList(Position);
+
+int main(void) {   
+	Position head; 
+	head = (Position)malloc(sizeof(struct stack)); 
+	head->next = NULL;
+	push(head);
+	push(head);
+	push(head);
+	push(head); 
+	pop(head);
+	printList(head->next);
+	system("pause"); 
+	return 0;
+} 
+
+int push(Position head) { 
+	Position newMember; 
+	newMember = (Position)malloc(sizeof(struct stack)); 
+	newMember->next = head->next; 
+	newMember->element = randomNumber(); 
+	head->next = newMember; 
+	return 0;
+} 
+
+int randomNumber(void) {
+	int lower = 10, upper = 100, num; 
+	num = rand() % (upper - lower + 1) + lower; 
+	return num;
+} 
+
+int pop(Position head) { 
+	if (head->next == NULL) {
+		printf("\nStack is already empty"); 
+		return 1;
+	}
+	Position temp = head->next; 
+	head->next = temp->next; 
+	free(temp);
+	return 0;
+} 
+
+int printList(Position head) {
+	while (head != NULL) {
+		printf("%d\n", head->element); 
+		head = head->next;
+	} 
+	return 0;
+}
