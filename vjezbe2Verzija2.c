@@ -1,122 +1,100 @@
-
 #define _CRT_SECURE_NO_WARNINGS
 
-#include <stdio.h>
+#include<stdio.h>
 #include<stdlib.h>
 #include<string.h> 
 
 #define MAX 20
 
-struct person;
 typedef struct person* Position;
 typedef struct person {
-	char name[MAX];
-	char surname[MAX];
-	int birthYear;
+	char name[MAX]; 
+	char surname[MAX]; 
+	int birthYear; 
 	Position next;
-}Person;
+}Person; 
 
-Person* enterData(void);
-void entryAtBeginning(Position, Position);
-void printList(Person *);
-void entryAtEnd(Position, Position);
-Person* search(char[MAX], Person *);
-void erase(char[], Person *);
+Position createPerson(void); 
+int enterAtBeginning(Position, Position); 
+int enterAtEnd(Position, Position); 
+int deletePerson(const char[], Position); 
+Position findPerson(const char[], Position); 
+int printList(Position);
+Position findPreviousPerson(const char[], Position);
 
-
-
-
-int main(void) {
-	Person *head, *prototype;
-	head = (Person*)malloc(sizeof(Person));
-	head->next = 0;
-	int choice, constant = 1;
-	char subject_search[MAX];
-	while (constant) {
-		printf("\nMENU\n(1)Unesi element na pocetak liste\n(2)Ispisi listu\n(3)Dodaj element na kraju liste\n(4)Pronadi element po prezimenu\n(5)Izbrisi odredeni element\n(6)Kraj\n");
-		scanf("%d", &choice);
-		switch (choice) {
-		case 1:
-			prototype = enterData();
-			entryAtBeginning(prototype, head);
-			break;
-		case 2:
-			printList(head->next);
-			break;
-		case 3:
-			prototype = enterData();
-			entryAtEnd(prototype, head);
-			break;
-		case 4: {
-			printf("\nUnesi prezime osobe koje zelis naci");
-			scanf("%s", subject_search);
-			Person* subjectSearch = search(subject_search, head);
-			printf("\nTrazena osoba je:%s\t%s\t%d\n", subjectSearch->next->name, subjectSearch->next->surname, subjectSearch->next->birthYear);
-			break;
-		}
-		case 5: {
-			printf("\nUnesi prezime osobe koju zelis izbrisati");
-			scanf("%s", subject_search);
-			erase(subject_search, head);
-			break;
-		}
-		case 6:
-			constant = 0;
-			break;
-		default:
-			printf("Greska");
-		}
-	}
-	free(head);
+int main(void) { 
+	Position head; 
+	head = (Position)malloc(sizeof(struct person)); 
+	head->next = NULL; 
+	enterAtBeginning(createPerson(), head); 
+	enterAtEnd(createPerson(), head); 
+	findPerson("firic", head);
+	deletePerson("firic", head); 
+	printList(head->next); 
 	system("pause"); 
 	return 0;
+} 
+
+Position createPerson(void) {
+	Position person; 
+	person = (Position)malloc(sizeof(struct person)); 
+	person->next = NULL; 
+	printf("\nUnesite ime osobe "); 
+	scanf("%s", person->name); 
+	printf("\nUnesite prezime osobe ");
+	scanf("%s", person->surname); 
+	printf("\nUnesite godinu rodjenja osobe ");
+	scanf("%d", &person->birthYear); 
+	return person;
 }
 
-Person* enterData(void) {
-	Person* P;
-	P = (Person*)malloc(sizeof(Person));
-	printf("Unesi ime\n");
-	scanf("%s", P->name);
-	printf("Unesi prezime\n");
-	scanf("%s", P->surname);
-	printf("Unesi godinu rodenja\n");
-	scanf("%d", &P->birthYear);
-	P->next = NULL;
-	return P;
-}
+int enterAtBeginning(Position person, Position head) {
+	person->next = head->next; 
+	head->next = person; 
+	return 0;
+}  
 
-void entryAtBeginning(Person* person, Person* head) {
-	person->next = head->next;
-	head->next = person;
-}
-
-void printList(Person *head) {
-	printf("IME\tPREZIME\tGODINA RODENJA");
-	while (head != NULL) {
-		printf("\n%s\t%s\t%d", head->name, head->surname, head->birthYear);
-		head = head->next;
-	}
-}
-
-void entryAtEnd(Person* person, Position head) {
+int enterAtEnd(Position person, Position head) {
 	while (head->next != NULL)
 		head = head->next;
-	entryAtBeginning(person, head);
+	enterAtBeginning(person, head); 
+	return 0;
+} 
 
-}
+int deletePerson(const char surname[], Position head) {
+	head = findPreviousPerson(surname, head); 
+	if (head == NULL)
+		return 1; 
+	Position temp = head->next; 
+	head->next = temp->next; 
+	free(temp); 
+	return 0;
+} 
 
-Person* search(char surname[MAX], Position head) {
-	while (head->next != NULL && strcmp(head->next->surname, surname) != 0)
-		head = head->next;
+Position findPerson(const char surname[], Position head) { 
+	while (head != NULL && strcmp(surname, head->surname) != 0)
+		head = head->next;  
+	printf("\nTrazena osoba je: %s\t%s\t%d", head->name, head->surname, head->birthYear);
 	return head;
-}
+} 
 
-void erase(char surname[], Position head) {
-	Position previous;
-	previous = search(surname, head);
-	if (previous != NULL) {
-		head = previous->next;
-		previous->next = head->next;
-	}
-	free(head);
+int printList(Position head) { 
+	printf("\nIME\tPREZIME\tGODINA RODENJA ");
+	while (head != NULL) {
+		printf("\n%s\t%s\t%d", head->name, head->surname, head->birthYear); 
+		head = head->next;
+	} 
+	return 0;
+} 
+
+Position findPreviousPerson(const char surname[], Position head) {
+	Position prev = head; 
+	head = head->next; 
+	while (head != NULL && (strcmp(surname, head->surname) != 0)) {
+		prev = head;
+		head = head->next;
+	} 
+	if (head == NULL)
+		return NULL; 
+	return prev;
 }
