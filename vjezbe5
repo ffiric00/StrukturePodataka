@@ -1,112 +1,126 @@
 #define _CRT_SECURE_NO_WARNINGS
 
-#include<stdio.h>
-#include<stdlib.h>
+#include<stdio.h> 
+#include<stdlib.h> 
 
-struct list; 
-typedef struct list* Position;
-typedef struct list {
-	int number; 
+typedef struct node* Position; 
+typedef struct node {
+	int element; 
 	Position next;
-}List; 
+}Node; 
 
-List* createElement(void);
-void pushFront(List*, List*); 
-List* dynamicAllocation(); 
-void insertList(List*); 
-int sortList(List*);
-List* disjunction(List*, List*); 
-List* conjuction(List*, List*);
+int Scan(Position); 
+int sortedScan(Position); 
+int insertAtBeginning(int, Position); 
+Position createNode(int); 
+Position conjunction(Position, Position);  
+Position disjunction(Position, Position);
+int printList(Position);
 
 int main(void) {
-	List *head1, *head2, *con, *dis;
-	head1 = dynamicAllocation();
-	head2 = dynamicAllocation();
-	head1->next = NULL; 
-	head2->next = NULL;
-	insertList(head1); 
-	printf("Unesena je prva lista"); 
-	insertList(head2); 
-	printf("\nUnesena je druga lista"); 
-	sortList(head1); 
-	sortList(head2);
-	dis = disjunction(head1, head2); 
-	con = conjunction(head1, head2);
-}    
-
-List* createElement(void) {
-	List* l; 
-	int element;
-	l = (List*)malloc(sizeof(List)); 
-	printf("\nUnesi element\n");
-	scanf("%d", &element);
-	l->number =element; 
-	l->next = NULL; 
-	return l;	
-} 
-
-void pushFront(List* l, List* head) {
-	l->next = head->next;
-	head->next = l;
-} 
-
-List* dynamicAlloaction() {
-	List* l;
-	l = (List*)malloc(sizeof(List)); 
-	return l;
-} 
-
-void insertList(List* head) { 
-	int choice;
-	while (1) { 
-		printf("\nUnesi 1 ako zelis unijeti novi element\n");
-		scanf("%d", &choice);
-		if (choice)
-			pushFront(createElement(), head);
-		else
-			break;
-	}
-} 
-
-int sortList(List* head) { 
-	Position j, prev_j, temp, end;
-	end = NULL;
-	while (head->next != end) {
-		prev_j = head;
-		j = head->next;
-		while (j->next != end) {
-			if (j->number > (j->next->number)) {
-				temp = j->next;
-				prev_j->next = temp;
-				j->next = temp->next;
-				temp->next = j;
-				j = temp;
-			}
-			prev_j = j;
-			j = j->next;
-		}
-		end = j;
-	}
+	Position list1, list2, list3, list4; 
+	list1 = (Position)malloc(sizeof(struct node)); 
+	list2 = (Position)malloc(sizeof(struct node)); 
+	list1->next = NULL; 
+	list2->next = NULL;
+	Scan(list1); 
+	Scan(list2);  
+	list3 = conjunction(list1, list2); 
+	list4 = disjunction(list1, list2);
+	printList(list3->next); 
+	printList(list4->next);
+	system("pause"); 
 	return 0;
 } 
 
-List* disjunction(List* head1, List* head2) { 
-	List* head3; 
-	dynamicAlloaction(head3); 
-	head3->next = NULL;
-	while (head1->next != NULL) { 
-		if (head1->number < head2->number) {
-			pushFront(head1, head3);
-			head1 = head1->next;
-		} 
-		else if (head1->number > head2->number) {
-			pushFront(head2, head3);
-			head2 = head2->next;
-		}
-	}
-
+int Scan(Position head) {
+	int i, j;
+	printf("\nKoliko elemenata zelis unijeti?"); 
+	scanf("%d", &i); 
+	for (j = 0; j < i; j++)
+		sortedScan(head); 
+	return 0;
 } 
 
-List* conjunction(List* head1, List* head2) {
+int sortedScan(Position head) {
+	int num; 
+	printf("\nUnesi element"); 
+	scanf("%d", &num); 
+	while (head->next != NULL && (num > head->next->element) )
+		head = head->next; 
+	insertAtBeginning(num, head); 
+	return 0;
+} 
 
+int insertAtBeginning(int num, Position head) {
+	Position node = createNode(num); 
+	node->next = head->next; 
+	head->next = node; 
+	return 0;
+} 
+Position createNode(int num) { 
+	Position node; 
+	node = (Position)malloc(sizeof(struct node)); 
+	node->element = num; 
+	node->next = NULL; 
+	return node;
+}
+
+Position conjunction(Position list1, Position list2) { 
+	Position list3; 
+	list3 = (Position)malloc(sizeof(struct node)); 
+	list3->next = NULL; 
+	while ( (list1 != NULL) && (list2 != NULL) ) {
+		if ( (list1->element == list2->element)) {
+			insertAtBeginning(list1->element, list3);
+			list1 = list1->next;
+			list2 = list2->next;
+		}
+		else if (list1->element > list2->element)
+			list2 = list2->next; 
+		else 
+			list1 = list1->next;
+	}  
+	return list3;	
+}  
+
+int printList(Position head) { 
+	while (head != NULL) {
+		printf("\n%d", head->element); 
+		head = head->next;
+	} 
+	return 0;
+} 
+
+Position disjunction(Position list1, Position list2) { 
+	Position list3;
+	list3 = (Position)malloc(sizeof(struct node));
+	list3->next = NULL;  
+	while ((list1 != NULL) && (list2 != NULL)) {
+		if ((list1->element == list2->element)) {
+			insertAtBeginning(list1->element, list3);
+			list1 = list1->next;
+			list2 = list2->next;
+		}
+		else if (list1->element > list2->element) {
+			insertAtBeginning(list2->element, list3);
+			list2 = list2->next;
+		}
+		else {
+			insertAtBeginning(list1->element, list3);
+			list1 = list1->next;
+		}
+	}
+	if (list1 == NULL) {
+		while (list2 != NULL) {
+			insertAtBeginning(list2->element, list3);
+			list2 = list2->next;
+		}
+	} 
+	if (list2 == NULL) 
+		while (list1 != NULL) {
+			insertAtBeginning(list1->element, list3);
+			list1 = list1->next;
+		}
+	return list3;
 }
