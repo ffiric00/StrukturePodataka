@@ -1,0 +1,74 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+typedef struct queue* Position; 
+typedef struct queue {
+	int element;
+	Position next;
+}Queue;  
+
+int push(Position); 
+int pop(Position); 
+int randomNumber(void); 
+Position findLastMember(Position); 
+int printList(Position);
+
+int main(void) {
+	Position head; 
+	head = (Position)malloc(sizeof(struct queue)); 
+	head->next = NULL; 
+	push(head); 
+	push(head);
+	push(head);
+	push(head);
+	pop(head);
+	push(head);
+	push(head);
+	pop(head);
+	push(head);
+	push(head); 
+	pop(head); 
+	printList(head->next); 
+	system("pause"); 
+	return 0;
+} 
+
+int randomNumber(void) {
+	int lower = 10, upper = 100, num;
+	num = rand() % (upper - lower + 1) + lower;
+	return num;
+} 
+
+int pop(Position head) {
+	if (head->next == NULL) {
+		printf("\nQueue is already empty"); 
+		return 1;
+	} 
+	Position temp = head->next; 
+	head->next = temp->next; 
+	free(temp); 
+	return 0;
+} 
+
+int push(Position head) { 
+	Position newMember = (Position)malloc(sizeof(struct queue)); 
+	newMember->element = randomNumber(); 
+	head = findLastMember(head); 
+	head->next = newMember; 
+	newMember->next = NULL; 
+	return 0;
+} 
+
+Position findLastMember(Position head) {
+	while (head->next != NULL)
+		head = head->next; 
+	return head;
+} 
+
+int printList(Position head) {
+	while (head != NULL) {
+		printf("\n%d", head->element); 
+		head = head->next;
+	} 
+	return 0;
+}
