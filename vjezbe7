@@ -1,0 +1,74 @@
+#include<stdio.h>
+#include<ctype.h>
+#include<malloc.h>
+
+#define MAX_LINE_SIZE 50
+
+typedef struct stack* Position;
+typedef struct stack {
+    int element;
+    Position next;
+}Stack;
+
+int pop(Position);
+int push(int, Position);
+
+int main(void) {
+    FILE* fp;
+    int i, operand1, operand2;
+    char line[MAX_LINE_SIZE];
+    Position head = (Position)malloc(sizeof(struct stack));
+    head->next = NULL;
+    fp = fopen("zadatak7.txt", "r");
+    fgets(line, MAX_LINE_SIZE, fp);
+    fclose(fp);
+    for(i = 0; i < MAX_LINE_SIZE; i++) {
+        if(isdigit(line[i]))
+            push((int)line[i], head);
+        else if(line[i] == '+') {
+            operand1 = pop(head);
+            operand2 = pop(head);
+            push((operand1 + operand2), head);
+        }
+        else if(line[i] == '-') {
+            operand1 = pop(head);
+            operand2 = pop(head);
+            push((operand2 - operand2), head);
+        }
+
+        else if(line[i] == '*') {
+            operand1 = pop(head);
+            operand2 = pop(head);
+            push((operand1 * operand2), head);
+        }
+
+        else if(line[i] == '/') {
+                operand1 = pop(head);
+                operand2 = pop(head);
+               push( (operand2 / operand1), head);
+        }
+    }
+    printf("\nRezultat je: %d", pop(head));
+}
+
+int push(int number, Position head) {
+	Position newMember;
+	newMember = (Position)malloc(sizeof(struct stack));
+	newMember->next = head->next;
+	newMember->element = number;
+	head->next = newMember;
+	return 0;
+}
+
+int pop(Position head) {
+    int returnValue;
+	if (head->next == NULL) {
+		printf("\nStack is already empty");
+		return 1;
+	}
+	Position temp = head->next;
+	head->next = temp->next;
+	returnValue = temp->element;
+	free(temp);
+	return returnValue;
+}
