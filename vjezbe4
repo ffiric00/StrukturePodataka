@@ -1,4 +1,7 @@
 #include<stdio.h> 
+#include<stdlib.h> 
+
+#define MAX_LINE_SIZE 100 
 
 struct polynom; 
 typedef struct polynom* Position; 
@@ -12,7 +15,15 @@ Position sum(Position, Position, Position);
 Position product(Position, Position, Position); 
 Position insertPolynom(FILE *);
 
-int main(void) { 
+int main(void) {  
+Position polynom1, polynom2;  
+	polynom1 = (Position)malloc(sizeof(struct polynom)); 
+	polynom1->next = NULL; 
+	polynom2 = (Position)malloc(sizeof(struct polynom));
+	polynom2->next = NULL;
+	FILE *fp;
+	char polyn1[MAX_LINE_SIZE], polyn2[MAX_LINE_SIZE];
+	fp = fopen("zadatak4.txt", "r"); 
 
 } 
 
