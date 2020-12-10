@@ -1,68 +1,89 @@
-#include<stdio.h> 
-#include<stdlib.h> 
+#define MAX_LINE_SIZE 256
 
-#define MAX_LINE_SIZE 100 
-
-struct polynom; 
 typedef struct polynom* Position; 
 typedef struct polynom {
-	int coefficient;
+	int coefficient; 
 	int exponent; 
 	Position next;
 }Polynom; 
 
-Position sum(Position, Position, Position);  
-Position product(Position, Position, Position); 
-Position insertPolynom(FILE *);
+int scanFromFile(const char*, Position); 
+int counter(const char*); 
+int sortedInput(Position, int, int); 
+Position add(Position, Position); 
+Position multiply(Position, Position);
 
-int main(void) {  
-Position polynom1, polynom2;  
-	polynom1 = (Position)malloc(sizeof(struct polynom)); 
-	polynom1->next = NULL; 
+int main(void) { 
+	Position polynom1, polynom2, sum, multiply; 
+	polynom1 = (Position)malloc(sizeof(struct polynom));
 	polynom2 = (Position)malloc(sizeof(struct polynom));
+	polynom1->next = NULL; 
 	polynom2->next = NULL;
-	FILE *fp;
-	char polyn1[MAX_LINE_SIZE], polyn2[MAX_LINE_SIZE];
-	fp = fopen("zadatak4.txt", "r"); 
-
+	scanFromFile("polinom1.txt", polynom1); 
+	scanFromFile("polinom2.txt", polynom2); 
+	sum = add(polynom1, polynom2); 
+	multiply = multiply(polynom1, polynom2);
 } 
 
-Position sum(Position p, Position q, Position s) {
-	Position temp; 
-	while (p != NULL && q != NULL) {
-		if (p->exponent == q->exponent) {
-			insertPolynom(s, p->coefficient + q->coefficient, p->exponent);
-			p = p->next;
-			q = q->next;
-		}
-		else if (p->exponent > q->exponent) {
-			insertPolynom(s, p->coefficient, p->exponent);
-			p = p->next;
-		}
-		else {
-			insertPolynom(s, q->coefficient, q->exponent);
-			q = q->next;
-		}
+int scanFromFile(const char* fileName, Position polynom) { 
+	FILE *fp = fopen(fileName, "r");  
+	int i;
+	for (i = 0; i < counter(fileName); i++) {
+		fscanf(fp, "%d %d", &polynom->coefficient, &polynom->exponent); 
+		sortedInput(polynom, polynom->coefficient, polynom->exponent);
 	} 
-	if (p != NULL)
-		temp = p;
-	else
-		temp = q; 
-	while (temp != NULL) {
-		insertPolynom(s, temp->coefficient, temp->exponent); 
-		temp = temp->next;
-	} 	 
-	return s;
+	fclose(fp); 
+	return 0;
+}
+
+int counter(const char* fileName) { 
+	int counter = 0;
+	char buffer[MAX_LINE_SIZE];
+	FILE *fp = fopen(fileName, "r"); 
+	while (fgets(buffer, MAX_LINE_SIZE, fp))
+		++counter; 
+	fclose(fp);
+	return counter;
 } 
 
-Position product(Position p, Position q, Position s) { 
-	if (p == NULL || q == NULL) {
-		s = NULL;
-	} 
-	else if{
+int sortedInput(Position polynom, int coefficient, int exponent) {
+	Position newMember; 
+	newMember = (Position)malloc(sizeof(struct polynom)); 
+	newMember->coefficient = coefficient; 
+	newMember->exponent = exponent; 
+	while (polynom->next != NULL && polynom->next->exponent < newMember->exponent)
+		polynom = polynom->next;
+	newMember->next = polynom->next; 
+	polynom->next = newMember; 
+	return 0;
+} 
 
+Position add(Position polynom1, Position polynom2) {
+	Position add;
+	add = (Position)malloc(sizeof(struct polynom));
+	add->next = NULL;
+	while (polynom1 != NULL || polynom2 != NULL) {
+		if (polynom1->exponent == polynom2->exponent) {
+			sortedInput(add, polynom1->exponent, (polynom1->coefficient + polynom2->coefficient));
+			polynom1 = polynom1->next;
+			polynom2 = polynom2->next;
+		}
+		if (polynom1->exponent > polynom2->exponent)
+			polynom1 = polynom1->next;
+		if (polynom2->exponent > polynom1->exponent)
+			polynom2 = polynom2->next;
 	}
-		 
-
-
+	if (polynom1 == NULL) {
+		while (polynom2 != NULL) {
+			sortedInput(add, polynom2->exponent, polynom2->coefficient);
+			polynom2 = polynom2->next;
+		}
+	}
+	if (polynom2 == NULL) {
+		while (polynom1 != NULL) {
+			sortedInput(add, polynom1->exponent, polynom1->coefficient);
+			polynom1 = polynom1->next;
+		}
+	} 
+	return add;
 }
