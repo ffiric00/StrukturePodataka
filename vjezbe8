@@ -1,0 +1,75 @@
+// 1 novi 2 pocetak 3 prethodni 4 ispis 5 izlaz 
+#include<stdio.h>
+#include<stdlib.h> 
+#include<string.h>
+#define MAX_NAME_LENGHT 1024
+
+typedef struct directory* Position; 
+typedef struct directory {
+	char name[MAX_NAME_LENGHT]; 
+	Position sibling; 
+	Position child;
+}Directory; 
+
+typedef struct stack* Pos; 
+typedef struct stack {
+	Position P;  
+	Pos next;
+}Stack; 
+
+int make_new_directory(Position, char[]); 
+int print_current_directory(Position);
+
+int main(void) { 
+	Position C; 
+	C = (Position)malloc(sizeof(struct directory)); 
+	C->sibling = NULL; 
+	C->child = NULL; 
+	int choice;
+	char directory_name[MAX_NAME_LENGHT];
+	printf("IZBORNIK\n1)md\n2)cd dir\n3)cd...\n4)dir\n5)izlaz\n"); 
+	printf("Unesi izbor\n"); 
+	scanf("%d", &choice); 
+	switch (choice) {
+		case 1: 
+			printf("Unesi ime novog direktorija\n"); 
+			scanf("%s", directory_name);  
+			make_new_directory(C, directory_name); 
+			break; 
+		case 2: 
+
+		case 3: 
+			show_previous_directory(C, directory_name);
+		case 4:
+			print_current_directory(C); 
+			break; 
+		case 5: 
+		default: 
+			printf("Error!!\n"); 
+			break;
+	}
+	system("pause"); 
+	return 0;
+
+} 
+
+int make_new_directory(Position C, char directory_name[]) { 
+	Position member; 
+	member = (Position)malloc(sizeof(struct directory)); 
+	member->name = directory_name; 
+	member->child = NULL;   
+	while (strcmp(C->child->sibling, member->name) != 0) {
+		if()
+	}
+	
+
+} 
+
+int print_current_directory(Position C) {
+	C = C->child; 
+	while (C != NULL) {
+		printf("\n%s", C->name); 
+		C = C->sibling;
+	} 
+	return 0;
+}
