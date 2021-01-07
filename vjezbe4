@@ -1,62 +1,68 @@
-#define MAX_LINE_SIZE 256
+#define _CRT_SECURE_NO_WARNINGS
 
-typedef struct polynom* Position; 
+#include<stdio.h> 
+#include<malloc.h> 
+#include<string.h> 
+
+#define MAX_LINE_SIZE 256 
+
+typedef struct polynom* Position;
 typedef struct polynom {
-	int coefficient; 
-	int exponent; 
+	int coefficient;
+	int exponent;
 	Position next;
-}Polynom; 
+}Polynom;
 
-int scanFromFile(const char*, Position); 
-int counter(const char*); 
-int sortedInput(Position, int, int); 
-Position add(Position, Position); 
+int scanFromFile(const char*, Position);
+int counter(const char*);
+int sortedInput(Position, int, int);
+Position add(Position, Position);
 Position multiply(Position, Position);
 
-int main(void) { 
-	Position polynom1, polynom2, sum, multiply; 
+int main(void) {
+	Position polynom1, polynom2, sum, mltply;
 	polynom1 = (Position)malloc(sizeof(struct polynom));
 	polynom2 = (Position)malloc(sizeof(struct polynom));
-	polynom1->next = NULL; 
+	polynom1->next = NULL;
 	polynom2->next = NULL;
-	scanFromFile("polinom1.txt", polynom1); 
-	scanFromFile("polinom2.txt", polynom2); 
-	sum = add(polynom1, polynom2); 
-	multiply = multiply(polynom1, polynom2);
-} 
+	scanFromFile("polinom1.txt", polynom1);
+	scanFromFile("polinom2.txt", polynom2);
+	sum = add(polynom1, polynom2);
+	mltply = multiply(polynom1, polynom2);
+}
 
-int scanFromFile(const char* fileName, Position polynom) { 
-	FILE *fp = fopen(fileName, "r");  
+int scanFromFile(const char* fileName, Position polynom) {
+	FILE *fp = fopen(fileName, "r");
 	int i;
 	for (i = 0; i < counter(fileName); i++) {
-		fscanf(fp, "%d %d", &polynom->coefficient, &polynom->exponent); 
+		fscanf(fp, "%d %d", &polynom->coefficient, &polynom->exponent);
 		sortedInput(polynom, polynom->coefficient, polynom->exponent);
-	} 
-	fclose(fp); 
+	}
+	fclose(fp);
 	return 0;
 }
 
-int counter(const char* fileName) { 
+int counter(const char* fileName) {
 	int counter = 0;
 	char buffer[MAX_LINE_SIZE];
-	FILE *fp = fopen(fileName, "r"); 
+	FILE *fp = fopen(fileName, "r");
 	while (fgets(buffer, MAX_LINE_SIZE, fp))
-		++counter; 
+		++counter;
 	fclose(fp);
 	return counter;
-} 
+}
 
 int sortedInput(Position polynom, int coefficient, int exponent) {
-	Position newMember; 
-	newMember = (Position)malloc(sizeof(struct polynom)); 
-	newMember->coefficient = coefficient; 
-	newMember->exponent = exponent; 
+	Position newMember;
+	newMember = (Position)malloc(sizeof(struct polynom));
+	newMember->coefficient = coefficient;
+	newMember->exponent = exponent;
 	while (polynom->next != NULL && polynom->next->exponent < newMember->exponent)
 		polynom = polynom->next;
-	newMember->next = polynom->next; 
-	polynom->next = newMember; 
+	newMember->next = polynom->next;
+	polynom->next = newMember;
 	return 0;
-} 
+}
 
 Position add(Position polynom1, Position polynom2) {
 	Position add;
@@ -84,6 +90,14 @@ Position add(Position polynom1, Position polynom2) {
 			sortedInput(add, polynom1->exponent, polynom1->coefficient);
 			polynom1 = polynom1->next;
 		}
-	} 
+	}
 	return add;
+} 
+
+Position multiply(Position polynom1, Position polynom2) {
+	Position i = NULL, j = NULL, result = NULL;
+	for (i = polynom1->next; i != NULL; i = i->next)
+		for (j = polynom2->next; j != NULL; j = j->next)
+			sortedInput(result, i->coefficient * j->coefficient, i->exponent + j->exponent);
+	return result;
 }
