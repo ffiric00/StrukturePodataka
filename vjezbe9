@@ -1,56 +1,59 @@
 #include<stdio.h> 
 #include<stdlib.h> 
 
-struct node; 
-typedef struct node* Position; 
+struct node;
+typedef struct node* Position;
 typedef struct node {
-	Position left; 
-	Position right; 
+	Position left;
+	Position right;
 	int element;
-}Node; 
+}Node;
 
-Position addElement(int, Position); 
-int printInorder(Position); 
-Position findElement(int, Position); 
-Position deleteElement(int, Position); 
+Position addElement(int, Position);
+int printInorder(Position);
+Position findElement(int, Position);
+Position deleteElement(int, Position);
 Position findMin(Position);
 
-int main(void) { 
-	Position root = NULL; 
-	root = (Position)malloc(sizeof(struct node)); 
-	addElement(5, root); 
+int main(void) {
+	Position root = NULL;
+	root = (Position)malloc(sizeof(struct node));
+	addElement(5, root);
 	addElement(4, root);
 	addElement(8, root);
 	addElement(2, root);
-	addElement(3, root); 
-	deleteElement(2, root); 
+	addElement(3, root);
+	deleteElement(2, root);
 	printInorder(root); 
+	system("pause");
 	return 0;
-} 
+}
 
 Position addElement(int element, Position root) {
-	if (root == NULL) {
-		root = (Position)malloc(sizeof(struct node)); 
-		root->element = element; 
-		root->left = NULL; 
-		root->right = NULL;
-	} 
-	else if (root->element > element)
-		root->left = addElement(element, root->left); 
+	if (root == NULL) { 
+		Position newMember;
+		newMember = (Position)malloc(sizeof(struct node));
+		newMember->element = element;
+		newMember->left = NULL;
+		newMember->right = NULL; 
+		return newMember;
+	}
+	if (root->element > element)
+		root->left = addElement(element, root->left);
 	else if (root->element < element)
-		root->right = addElement(element, root->right); 
+		root->right = addElement(element, root->right);
 	return root;
-} 
+}
 
 int printInorder(Position root) {
 	if (root == NULL)
-		return 0; 
-	printInorder(root->left); 
-	printf("\n%d", root->element); 
+		return 0;
+	printInorder(root->left);
+	printf("\n%d", root->element);
 	printInorder(root->right);
-} 
+}
 
-Position findElement(int element, Position root) { 
+Position findElement(int element, Position root) {
 	if (root == NULL)
 		return NULL;
 	else if (element < root->element)
@@ -59,34 +62,34 @@ Position findElement(int element, Position root) {
 		findElement(element, root->right);
 	else
 		return root;
-} 
+}
 
 Position deleteElement(int element, Position root) {
 	Position temp = NULL;
 	if (root == NULL)
 		printf("\nElement ne postoji!");
 	else if (element < root->element)
-		root->left = deleteElement(element, root->left);  
+		root->left = deleteElement(element, root->left);
 	else if (element > root->element)
-		root->right = deleteElement(element, root->right); 
-	else if ((root->left != NULL) && (root->right != NULL)) { 
-		temp = findMin(root->right); 
-		root->element = temp->element; 
+		root->right = deleteElement(element, root->right);
+	else if ((root->left != NULL) && (root->right != NULL)) {
+		temp = findMin(root->right);
+		root->element = temp->element;
 		root->right = deleteElement(root->element, root->right);
-	} 
+	}
 	else {
-		temp = root; 
+		temp = root;
 		if (root->left == NULL)
 			root = root->right;
 		else
-			root = root->left; 
+			root = root->left;
 		free(temp);
 	}
 	return root;
-} 
+}
 
-Position findMin(Position root) { 
+Position findMin(Position root) {
 	while (root->left != NULL)
-		root = root->left; 
+		root = root->left;
 	return root;
 }
