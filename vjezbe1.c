@@ -54,7 +54,7 @@ int readData(Student* st, FILE *fp, int studentNumber) {
 }
 
 int printData(Student* st, int studentNumber) {
-	printf("IME\tPREZIME\tBODOVI\tRELATIVNI BROJ BODOVAn");
+	printf("IME\tPREZIME\tBODOVI\tRELATIVNI BROJ BODOVA\n");
 	int i;
 	float maxScore = 0, relativeScore;
 	for (i = 0; i < studentNumber; i++)
