@@ -1,11 +1,12 @@
 #define _CRT_SECURE_NO_WARNINGS
 
 #include<stdio.h> 
-#include<malloc.h> 
+#include<stdlib.h> 
 #include<string.h> 
 
 #define MAX_LINE_SIZE 256 
 
+struct polynom;
 typedef struct polynom* Position;
 typedef struct polynom {
 	int coefficient;
@@ -17,7 +18,8 @@ int scanFromFile(const char*, Position);
 int counter(const char*);
 int sortedInput(Position, int, int);
 Position add(Position, Position);
-Position multiply(Position, Position);
+Position multiply(Position, Position); 
+int printPolynom(Position);
 
 int main(void) {
 	Position polynom1, polynom2, sum, mltply;
@@ -28,13 +30,18 @@ int main(void) {
 	scanFromFile("polinom1.txt", polynom1);
 	scanFromFile("polinom2.txt", polynom2);
 	sum = add(polynom1, polynom2);
-	mltply = multiply(polynom1, polynom2);
+	mltply = multiply(polynom1, polynom2); 
+	printPolynom(sum->next); 
+	printf("\n"); 
+	printPolynom(mltply->next); 
+	system("pause");
+	return 0;
 }
 
 int scanFromFile(const char* fileName, Position polynom) {
-	FILE *fp = fopen(fileName, "r");
-	int i;
-	for (i = 0; i < counter(fileName); i++) {
+	FILE *fp;
+	fp = fopen(fileName, "r");
+	for (int i = 0; i < counter(fileName); i++) {
 		fscanf(fp, "%d %d", &polynom->coefficient, &polynom->exponent);
 		sortedInput(polynom, polynom->coefficient, polynom->exponent);
 	}
@@ -43,13 +50,16 @@ int scanFromFile(const char* fileName, Position polynom) {
 }
 
 int counter(const char* fileName) {
-	int counter = 0;
-	char buffer[MAX_LINE_SIZE];
-	FILE *fp = fopen(fileName, "r");
-	while (fgets(buffer, MAX_LINE_SIZE, fp))
-		++counter;
+	int counter = 1;
+	char buffer;
+	FILE *fp;
+	fp = fopen(fileName, "r");
+	while (buffer = fgetc(fp) != EOF) {
+		if (buffer == ' ')
+			counter++;
+	}
 	fclose(fp);
-	return counter;
+	return (counter / 2);
 }
 
 int sortedInput(Position polynom, int coefficient, int exponent) {
@@ -92,7 +102,7 @@ Position add(Position polynom1, Position polynom2) {
 		}
 	}
 	return add;
-} 
+}
 
 Position multiply(Position polynom1, Position polynom2) {
 	Position i = NULL, j = NULL, result = NULL;
@@ -100,4 +110,12 @@ Position multiply(Position polynom1, Position polynom2) {
 		for (j = polynom2->next; j != NULL; j = j->next)
 			sortedInput(result, i->coefficient * j->coefficient, i->exponent + j->exponent);
 	return result;
+} 
+
+int printPolynom(Position polynom) {
+	while (polynom != NULL) {
+		printf("%d %d\t", polynom->coefficient, polynom->exponent); 
+		polynom = polynom->next;
+	} 
+	return 0;
 }
