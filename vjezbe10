@@ -1,0 +1,129 @@
+#define _CRT_SECURE_NO_WARNINGS
+
+#include<stdio.h>
+#include<stdlib.h> 
+#include<string.h>  
+
+
+#define DATA_SIZE 11 
+#define FILE_NAME_SIZE 100000
+
+struct node; 
+typedef struct node* positionNode; 
+typedef struct node {
+	positionNode left; 
+	positionNode right; 
+	char data[DATA_SIZE];
+}Node; 
+
+struct list; 
+typedef struct list* positionList; 
+typedef struct list {
+	positionNode data; 
+	positionList next;
+}Stack; 
+
+positionNode readPostfixFromFile(char *filename); 
+positionNode createNode(char *data); 
+positionList createListNode(positionNode data); 
+int push(positionList head, positionNode data); 
+positionNode pop(positionList head); 
+bool isNumber(char* string); 
+int toInfixList(positionList head, positionNode current);
+
+
+int main(void) { 
+	char filename[FILE_NAME_SIZE] = { 0 }; 
+	positionNode root = NULL;
+	printf("\nPlease enter file name"); 
+	scanf("%s", filename); 
+	root = readPostfixFromFile(filename); 
+	if (root == NULL)
+		return EXIT_FAILURE; 
+	toInfixList(&inf
+} 
+
+positionNode readPostfixFromFile(char *filename) {
+	FILE *fp = NULL; 
+	char readString[DATA_SIZE] = { 0 }; 
+	positionNode result;
+	fp = fopen("filename", "r"); 
+	if (fp == NULL) {
+		printf("\nFile %s doesn't exit or you do not have permission to open it.", filename);
+		return NULL;
+	} 
+	while (!feof(fp)) { 
+		positionNode node = NULL; 
+		fscanf(fp, "%s", readString); 
+		node = createNode(readString); 
+		if (node == NULL) {
+			fclose(fp); 
+			return NULL
+		} 
+		if (isNumber(node->data)) {
+			push(&head, node);
+		}
+		else {
+			node->right pop(&head);  //krivo
+			if (node->right == NULL) {
+			}
+			
+	} 
+		push(&head, node); 
+		result = pop(&head); 
+		if (result == NULL) {
+			printf("\nFile is empty");
+			return NULL;
+		}
+
+
+} 
+
+positionNode createNode(char *data) {
+	positionNode p = NULL;
+	p = (positionNode)malloc(sizeof(struct node));
+	if (p == NULL) {
+		printf("\nData allocation failed");
+		return NULL;
+	}
+}
+
+positionList createListNode(positionNode data) {
+
+} 
+
+int push(positionList head, positionNode data) {
+	positionList node = NULL; 
+	node = createListNode(data); 
+	if (node == NULL) {
+		return -1;
+	} 
+	node->next = head->next; 
+	head->next = node; 
+	return 0;
+} 
+
+positionNode pop(positionList head) {
+	positionList first = head->next; 
+	positionNode result;
+	if (first == NULL)
+		return NULL; 
+	head->next = first->next;
+	result = first->data; 
+	free(first); 
+	return result;	
+} 
+
+bool isNumber(char* string) {
+	int number = 0; 
+	if (sscanf(string, "%d", &number) == 1)
+		return true;
+	else
+		return false;
+} 
+
+int toInfixList(positionList head, positionNode current) {
+	if (current = NULL)
+		return; 
+	toInfixList(head, current->left);
+}
