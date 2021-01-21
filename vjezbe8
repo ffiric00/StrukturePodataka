@@ -1,75 +1,195 @@
-// 1 novi 2 pocetak 3 prethodni 4 ispis 5 izlaz 
+#define _CRT_SECURE_NO_WARNINGS
+
 #include<stdio.h>
 #include<stdlib.h> 
 #include<string.h>
+
 #define MAX_NAME_LENGHT 1024
 
-typedef struct directory* Position; 
+typedef struct directory* Position;
 typedef struct directory {
-	char name[MAX_NAME_LENGHT]; 
-	Position sibling; 
+	char name[MAX_NAME_LENGHT];
+	Position sibling;
 	Position child;
-}Directory; 
+}Directory;
 
-typedef struct stack* Pos; 
+typedef struct stack* Pos;
 typedef struct stack {
-	Position P;  
+	Position P;
 	Pos next;
-}Stack; 
+}Stack;
 
-int make_new_directory(Position, char[]); 
-int print_current_directory(Position);
+int md(Position);
+Position cd(Position);
+int dir(Position);
+Position dir_exit(Position);
+int push(Position, Pos);
+Position pop(Pos);
+Pos stack_exit(Pos);
 
-int main(void) { 
-	Position C; 
-	C = (Position)malloc(sizeof(struct directory)); 
-	C->sibling = NULL; 
-	C->child = NULL; 
+int main(void) {
+	Position C;
+	C = (Position)malloc(sizeof(struct directory));
+	C->sibling = NULL;
+	C->child = NULL;
 	int choice;
-	char directory_name[MAX_NAME_LENGHT];
-	printf("IZBORNIK\n1)md\n2)cd dir\n3)cd...\n4)dir\n5)izlaz\n"); 
-	printf("Unesi izbor\n"); 
-	scanf("%d", &choice); 
+	char directory_name[MAX_NAME_LENGHT] = {};
+	Pos stack_ = (Pos)malloc(sizeof(stack));
+	stack_->next = NULL;
+	printf("IZBORNIK\n1)md\n2)cd dir\n3)cd...\n4)dir\n5)izlaz\n");
+	printf("Unesi izbor\n");
+	scanf("%d", &choice);
 	switch (choice) {
-		case 1: 
-			printf("Unesi ime novog direktorija\n"); 
-			scanf("%s", directory_name);  
-			make_new_directory(C, directory_name); 
-			break; 
-		case 2: 
-
-		case 3: 
-			show_previous_directory(C, directory_name);
-		case 4:
-			print_current_directory(C); 
-			break; 
-		case 5: 
-		default: 
-			printf("Error!!\n"); 
+		case 1:
+			md(C); 
 			break;
-	}
-	system("pause"); 
+		case 2: 
+			push(C, stack_); 
+			C = cd(C); 
+			break;
+		case 3:
+			C = pop(stack_); 
+			break;
+		case 4:
+			dir(C);
+			break;
+		case 5: 
+			printf("\nEnd\n"); 
+			C = dir_exit(C); 
+			stack_ = stack_exit(stack_); 
+			break;
+		default:
+			printf("Error!!\n");
+			break;
+		}
+	system("pause");
 	return 0;
 
 } 
 
-int make_new_directory(Position C, char directory_name[]) { 
-	Position member; 
-	member = (Position)malloc(sizeof(struct directory)); 
-	member->name = directory_name; 
-	member->child = NULL;   
-	while (strcmp(C->child->sibling, member->name) != 0) {
-		if()
+int md(Position P) {
+	Position new_directory = NULL;
+	Position temp = NULL;
+	if (P == NULL) {
+		printf("\nError\n");
+		return 0;
 	}
-	
-
-} 
-
-int print_current_directory(Position C) {
-	C = C->child; 
-	while (C != NULL) {
-		printf("\n%s", C->name); 
-		C = C->sibling;
+	else {
+		new_directory = (Position)malloc(sizeof(struct directory));
+		printf("Insert new directory name\n");
+		fgets(new_directory->name, MAX_NAME_LENGHT, stdin);
+		if (P->child == NULL) {
+			new_directory->child = P->child;
+			P->child = new_directory;
+		}
+		else {
+			temp = P->child;
+			if (P->child->sibling == NULL && strcmp(new_directory->name, P->child->name) < 0) {
+				P->child = new_directory;
+				temp->sibling = new_directory->sibling;
+				new_directory->sibling = temp;
+			}
+			else if (P->child->sibling == NULL && strcmp(new_directory->name, P->child->name) >= 0)
+				P->child->sibling = new_directory;
+			else if (P->child->sibling != NULL && strcmp(new_directory->name, P->child->name) < 0) {
+				P->child = new_directory;
+				new_directory->sibling = temp;
+			}
+			else if (P->child->sibling != NULL && strcmp(new_directory->name, P->child->name) >= 0) {
+				while (temp->sibling != NULL && strcmp(temp->sibling->name, new_directory->name) < 0)
+					temp = temp->sibling;
+				new_directory->sibling = temp->sibling;
+				temp->sibling = new_directory;
+			}
+		}
 	} 
 	return 0;
+} 
+
+Position cd(Position P) {
+	Position temp = NULL;
+	char name[MAX_NAME_LENGHT];
+	if (P == NULL) {
+		printf("Folder doesn't exist\n");
+		return NULL;
+	}
+	else {
+		printf("Insert subdirectory name\n");
+		fgets(name, MAX_NAME_LENGHT, stdin);
+
+		temp = P->child;
+		while (temp != NULL && strcmp(temp->name, name) != 0)
+			temp = temp->sibling;
+		printf("Location : Directory %s\n", name);
+		if (temp == NULL) {
+			printf("Error, file (%s) not in directory\n", name);
+			return NULL;
+		}
+		return temp;
+	}
+} 
+
+int dir(Position P) {
+	if (P == NULL) {
+		printf("Folder does not exist\n");
+		return 0;
+	}
+	else {
+		printf("Directories in (%s) :\n", P->name);
+		Position temp = P->child;
+		if (temp != NULL)
+			while (temp != NULL) {
+				printf("%s\n", temp->name);
+				temp = temp->sibling;
+			}
+		else {
+			printf("\n%s : ", P->name);
+			printf("Empty folder!\n");
+		}
+	}
+	return 0;
+} 
+
+Position dir_exit(Position P) {
+	if (P != NULL) {
+		P->sibling = dir_exit(P->sibling);
+		P->child = dir_exit(P->child);
+		free(P);
+	}
+	return NULL;
 }
+
+Pos stack_exit(Pos S) {
+	if (S != NULL) {
+		S->next = stack_exit(S->next);
+		free(S);
+	}
+	return NULL;
+} 
+
+int push(Position d, Pos s) {
+	Pos new_s = NULL;
+	new_s = (Pos)malloc(sizeof(stack));
+	if (new_s == NULL) {
+		printf("\nError\n");
+		return 1;
+	}
+	new_s->P = d;
+	new_s->next = s->next;
+	s->next = new_s;
+	return 0;
+}
+
+Position pop(Pos S) {
+	if (S->next == NULL) {
+		printf("\nEmpty stack\n");
+		return NULL;
+	}
+	Pos temp = S->next;
+	Position value = temp->P;
+
+	S->next = temp->next;
+	free(temp);
+	return value;
+}
+
