@@ -8,77 +8,92 @@
 #define DATA_SIZE 11 
 #define FILE_NAME_SIZE 100000
 
-struct node; 
-typedef struct node* positionNode; 
+struct node;
+typedef struct node* positionNode;
 typedef struct node {
-	positionNode left; 
-	positionNode right; 
+	positionNode left;
+	positionNode right;
 	char data[DATA_SIZE];
-}Node; 
+}Node;
 
-struct list; 
-typedef struct list* positionList; 
+struct list;
+typedef struct list* positionList;
 typedef struct list {
-	positionNode data; 
+	positionNode data;
 	positionList next;
-}Stack; 
+}Stack;
 
-positionNode readPostfixFromFile(char *filename); 
-positionNode createNode(char *data); 
-positionList createListNode(positionNode data); 
-int push(positionList head, positionNode data); 
-positionNode pop(positionList head); 
-bool isNumber(char* string); 
-int toInfixList(positionList head, positionNode current);
+positionNode readPostfixFromFile(char *filename);
+positionNode createNode(char *data);
+int push(positionList head, positionNode data);
+positionNode pop(positionList head);
+bool isNumber(char* string);
+positionNode deleteAll(positionNode); 
+int printInorder(positionNode, FILE*);
+int writeInfix(positionNode, char*);
+positionNode DeleteAll(positionNode); 
+positionNode createListNode(char*);
 
-
-int main(void) { 
-	char filename[FILE_NAME_SIZE] = { 0 }; 
+int main(void) {
+	char filename[FILE_NAME_SIZE] = { 0 };
 	positionNode root = NULL;
-	printf("\nPlease enter file name"); 
-	scanf("%s", filename); 
-	root = readPostfixFromFile(filename); 
+	printf("\nPlease enter file name");
+	scanf("%s", filename);
+	root = readPostfixFromFile(filename);
 	if (root == NULL)
 		return EXIT_FAILURE; 
-	toInfixList(&inf
-} 
+	printf("\nPlease enter file name for infix output\n");
+	scanf("%s", filename);
+	writeInfix(root, filename); 
+	deleteAll(root); 
+	system("pause"); 
+	return 0;
+}
 
 positionNode readPostfixFromFile(char *filename) {
-	FILE *fp = NULL; 
-	char readString[DATA_SIZE] = { 0 }; 
-	positionNode result;
-	fp = fopen("filename", "r"); 
+	FILE *fp = NULL;
+	char readString[DATA_SIZE] = { 0 };
+	positionNode result; 
+	positionList head = NULL; 
+	head->next = NULL;
+	fp = fopen("filename", "r");
 	if (fp == NULL) {
 		printf("\nFile %s doesn't exit or you do not have permission to open it.", filename);
 		return NULL;
-	} 
-	while (!feof(fp)) { 
-		positionNode node = NULL; 
-		fscanf(fp, "%s", readString); 
-		node = createNode(readString); 
+	}
+	while (!feof(fp)) {
+		positionNode node = NULL;
+		fscanf(fp, "%s", readString);
+		node = createNode(readString);
 		if (node == NULL) {
-			fclose(fp); 
-			return NULL
-		} 
-		if (isNumber(node->data)) {
-			push(&head, node);
-		}
-		else {
-			node->right pop(&head);  //krivo
-			if (node->right == NULL) {
-			}
-			
-	} 
-		push(&head, node); 
-		result = pop(&head); 
-		if (result == NULL) {
-			printf("\nFile is empty");
+			fclose(fp);
 			return NULL;
 		}
-
-
-} 
-
+		if (isNumber(node->data)) {
+			push(head, node);
+		}
+		else {
+			node->right = pop(head);  
+			if (node->right == NULL) {
+				printf("\nPostfix expression is incorrect");
+				return NULL;
+			}
+			node->left = pop(head);
+			if (node->left == NULL) {
+				printf("\nPostfix expression is incorrect");
+				return NULL;
+			}
+			push(head, node);
+		}
+	}
+	fclose(fp);
+	result = pop(head);
+	if (result == NULL) {
+		printf("\nFile is empty");
+		return NULL;
+	}
+	return result;
+}
 positionNode createNode(char *data) {
 	positionNode p = NULL;
 	p = (positionNode)malloc(sizeof(struct node));
@@ -87,43 +102,64 @@ positionNode createNode(char *data) {
 		return NULL;
 	}
 }
-
-positionList createListNode(positionNode data) {
-
-} 
-
 int push(positionList head, positionNode data) {
-	positionList node = NULL; 
-	node = createListNode(data); 
+	positionList node = NULL;
+	node = createListNode(data) //????
 	if (node == NULL) {
-		return -1;
-	} 
-	node->next = head->next; 
-	head->next = node; 
+		return 1;
+	}
+	node->next = head->next;
+	head->next = node;
 	return 0;
-} 
+}
 
 positionNode pop(positionList head) {
-	positionList first = head->next; 
+	positionList first = head->next;
 	positionNode result;
 	if (first == NULL)
-		return NULL; 
+		return NULL;
 	head->next = first->next;
-	result = first->data; 
-	free(first); 
-	return result;	
-} 
+	result = first->data;
+	free(first);
+	return result;
+}
 
 bool isNumber(char* string) {
-	int number = 0; 
+	int number = 0;
 	if (sscanf(string, "%d", &number) == 1)
 		return true;
 	else
 		return false;
+}
+
+int writeInfix(positionNode root, char* filename) {
+	FILE *fp = NULL; 
+	fp = fopen("filename", "w"); 
+	printInorder(root, fp); 
+	fclose(fp); 
+	return 0;
 } 
 
-int toInfixList(positionList head, positionNode current) {
-	if (current = NULL)
-		return; 
-	toInfixList(head, current->left);
+int PrintInorder(positionNode current, FILE *fp) {
+	if (current != NULL) {
+		fprintf(fp, "( ");
+		PrintInorder(current->left, fp);
+		fprintf(fp, "%s ", current->data);
+		PrintInorder(current->right, fp);
+		fprintf(fp, ") ");
+	} 
+	return 0;
+} 
+
+positionNode createListNode(char* string) { 
+	positionNode Node = NULL;
+	Node = (positionNode)malloc(sizeof(node));
+	if (Node == NULL) {
+		printf("\tMemory allocation failed!!\n");
+		return NULL;
+	}
+	strcpy(Node->data, string);
+	Node->left = NULL;
+	Node->right = NULL; 
+	return Node;
 }
